@@ -6,6 +6,16 @@ ENV_FILE_DIR = os.path.abspath(".")
 
 class Config(BaseSettings):
     BOT_TOKEN: SecretStr
+    host: SecretStr
+    port: SecretStr
+    user: SecretStr
+    password: SecretStr
+    db: SecretStr
+
+    @property
+    def url(self):
+        return f"postgresql+asyncpg://{self.user}:{self.password}@{self.host}:{self.port}/{self.db}"
+
 
     @property
     async def bot_token(self):
