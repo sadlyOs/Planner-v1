@@ -5,7 +5,7 @@ from aiogram.types import Update, Message, CallbackQuery
 from fluentogram.src.abc import translator
 
 from database.requests import Request
-from services.language.translator import FluentService, TranslationLoader
+from language.translator import Translator
 
 class LangMiddleware(BaseMiddleware):
     async def __call__(
@@ -14,10 +14,8 @@ class LangMiddleware(BaseMiddleware):
         event: Union[Message, CallbackQuery],
         data: Dict[str, Any],
     ) -> Any:
-        fluent: FluentService = data['fluent']
         request: Request = data['request']
         user_lang = (await request.get_user(event.from_user.id)).lang
-        trans_runner: TranslationLoader = fluent.get_translator_by_locale(user_lang)
-        data['i18n'] = trans_runner
-        data["i18n_hub"] = fluent.hub
+        translator: Translator = data['translator']
+        data['translator'] = translator(language=user_lang)
         return await handler(event, data)
