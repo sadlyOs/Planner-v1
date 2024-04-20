@@ -15,7 +15,8 @@ class LangMiddleware(BaseMiddleware):
         data: Dict[str, Any],
     ) -> Any:
         request: Request = data['request']
-        user_lang = (await request.get_user(event.from_user.id)).lang
+
+        user_lang = (await request.get_user(event.from_user.id)).lang # берём язык у пользователя
         translator: Translator = data['translator']
         data['translator'] = translator(language=user_lang)
         return await handler(event, data)

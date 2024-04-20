@@ -25,6 +25,7 @@ async def on_shutdown(logger):
     logger.info("STOP BOT")
 
 
+# Подключаем базу данных
 async def _conf_postgres():
     engine = create_async_engine(
         config.url,
