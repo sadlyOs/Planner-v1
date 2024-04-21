@@ -6,3 +6,4 @@ settinsButton=Edit language
 choiceLang=Choose a language
 newLang=The language has been changed to English
 confirmLang=Confirm language, Confirm
+back=Back

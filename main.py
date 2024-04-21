@@ -48,11 +48,12 @@ async def main():
     dp = Dispatcher(logger=logger)
     session_maker = await _conf_postgres()
 
+    dp.include_router(setup_message_routers())
     setup_middlewares(dp, session_maker)
     dp.startup.register(on_startup)
     dp.shutdown.register(on_shutdown)
 
-    dp.include_router(setup_message_routers())
+    
     await bot.delete_webhook(drop_pending_updates=True)
 
     try:

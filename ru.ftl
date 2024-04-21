@@ -6,3 +6,4 @@ settinsButton=Изменить язык
 choiceLang=Выберите язык
 newLang=Язык был изменён на русский
 confirmLang=Подтвердите язык, Подтвердить
+back=Назад
