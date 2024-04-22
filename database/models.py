@@ -18,5 +18,6 @@ class Task(Base):
     description = Column(String)
     due_datetime = Column(DateTime)
     completed = Column(Boolean, default=False)
+    expectation = Column(Boolean, default=False)
     user = relationship('User', back_populates="tasks")
     
