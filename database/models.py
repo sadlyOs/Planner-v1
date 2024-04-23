@@ -1,3 +1,4 @@
+from datetime import datetime
 from sqlalchemy.orm import declarative_base, relationship
 from sqlalchemy import Boolean, Column, BigInteger, DateTime, ForeignKey, Integer, String
 
@@ -16,7 +17,7 @@ class Task(Base):
     user_id = Column(Integer, ForeignKey('users.id'))
     title = Column(String)
     description = Column(String)
-    due_datetime = Column(DateTime)
+    due_datetime = Column(DateTime, default=datetime.utcnow)
     completed = Column(Boolean, default=False)
     expectation = Column(Boolean, default=False)
     user = relationship('User', back_populates="tasks")
