@@ -14,6 +14,7 @@ class User(Base):
 class Task(Base):
     __tablename__ = 'tasks'
     id = Column(Integer, primary_key=True)
+    code_id = Column(String)
     user_id = Column(Integer, ForeignKey('users.id'))
     title = Column(String)
     description = Column(String)

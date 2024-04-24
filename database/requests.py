@@ -1,5 +1,6 @@
+from aiogram.types import User as User_info
 from sqlalchemy.ext.asyncio import AsyncSession
-from .models import User
+from .models import User, Task
 
 class Request:
     def __init__(self, session: AsyncSession) -> None:
@@ -18,3 +19,10 @@ class Request:
         if user.lang != lang:
             user.lang = lang
             await self.session.commit()
+
+
+    ''' Task '''
+    async def create_task(self, ids: str, user: User_info, title: str, description: str, due_datetime: str):
+        task = Task(code_id=str(ids), user_id=user.id, title=title, description=description, due_datetime=due_datetime)
+        self.session.add(task)
+        await self.session.commit()

@@ -12,10 +12,8 @@ from handlers import setup_message_routers
 from middleware.setup import setup_middlewares
 from language.translator import Translator
 
-# from database.models import create_db, async_session
-# from middleware.dbmiddleware import DbSession
-# from aiogram.fsm.storage.redis import RedisStorage
-
+from aiogram.fsm.storage.redis import RedisStorage
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
 async def on_startup(logger):
     logger.info("START BOT")
@@ -44,12 +42,18 @@ async def main():
     
     logger = logging.getLogger(__name__)
 
+    storage = RedisStorage.from_url('redis://localhost:6379/0')
+
     bot = Bot(token=await config.bot_token)
-    dp = Dispatcher(logger=logger)
+    dp = Dispatcher(logger=logger, storage=storage, bot=bot)
+
+    scheduler = AsyncIOScheduler(timezone='Europe/Moscow')
+
+    scheduler.start()
     session_maker = await _conf_postgres()
 
     dp.include_router(setup_message_routers())
-    setup_middlewares(dp, session_maker)
+    setup_middlewares(dp, session_maker, scheduler)
     dp.startup.register(on_startup)
     dp.shutdown.register(on_shutdown)
 

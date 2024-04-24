@@ -1,13 +1,18 @@
-from aiogram import F, Router
+import uuid
+
+from aiogram import F, Bot, Router
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
-
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from database.requests import Request
 
 from States.task_create import CreateTask
 from keyboard.mainMenu import menu
 from keyboard.confirm_button import confirm, move_back
 from language.translator import LocalizedTranslator
 from datetime import datetime
+from services.time_messages import send_message_time
+
 
 create = Router()
 
@@ -56,10 +61,16 @@ async def create_date(msg: Message, translator: LocalizedTranslator, state: FSMC
     
 
 @create.callback_query(F.data == 'conf', CreateTask.confirm)
-async def confirm_task(call: CallbackQuery, translator: LocalizedTranslator, state: FSMContext):
-    data = await state.get_data()
+async def confirm_task(call: CallbackQuery, translator: LocalizedTranslator, state: FSMContext, request: Request, apscheduler: AsyncIOScheduler, bot: Bot):
+    state_dates = await state.get_data()
+    random_uuid = uuid.uuid4()
+    print(str(random_uuid))
+    await request.create_task(ids=random_uuid, user=call.from_user, title=state_dates['title'], description=state_dates['description'], due_datetime=datetime.strptime(state_dates['date'], "%Y-%m-%d %H:%M"))
+
     await call.message.edit_text(text=translator.get('addTask'), reply_markup=await menu(translator))
     await state.clear()
+    apscheduler.add_job(send_message_time, trigger='date', run_date=datetime.strptime(state_dates['date'], "%Y-%m-%d %H:%M"),
+                              kwargs={'user': call.from_user, 'bot': bot})
 
 @create.callback_query(F.data == 'back', CreateTask.confirm)
 async def back_task(call: CallbackQuery, translator: LocalizedTranslator, state: FSMContext):
