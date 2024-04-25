@@ -70,7 +70,7 @@ async def confirm_task(call: CallbackQuery, translator: LocalizedTranslator, sta
     await call.message.edit_text(text=translator.get('addTask'), reply_markup=await menu(translator))
     await state.clear()
     apscheduler.add_job(send_message_time, trigger='date', run_date=datetime.strptime(state_dates['date'], "%Y-%m-%d %H:%M"),
-                              kwargs={'user': call.from_user, 'bot': bot})
+                              kwargs={'user': call.from_user, 'bot': bot, 'request': request, 'translator': translator, 'ids': str(random_uuid)})
 
 @create.callback_query(F.data == 'back', CreateTask.confirm)
 async def back_task(call: CallbackQuery, translator: LocalizedTranslator, state: FSMContext):

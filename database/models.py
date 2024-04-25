@@ -10,11 +10,11 @@ class User(Base):
     id = Column(BigInteger, primary_key=True)
     lang = Column(String(2), default='ru')
     tasks = relationship("Task", back_populates='user')
+    rel = relationship("RelUserTask", back_populates='user')
 
 class Task(Base):
     __tablename__ = 'tasks'
-    id = Column(Integer, primary_key=True)
-    code_id = Column(String)
+    id = Column(String, primary_key=True)
     user_id = Column(Integer, ForeignKey('users.id'))
     title = Column(String)
     description = Column(String)
@@ -22,4 +22,13 @@ class Task(Base):
     completed = Column(Boolean, default=False)
     expectation = Column(Boolean, default=False)
     user = relationship('User', back_populates="tasks")
+    rel = relationship("RelUserTask", back_populates='tasks')
     
+
+class RelUserTask(Base):
+    __tablename__ = 'rel'
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey('users.id'))
+    task_id = Column(String, ForeignKey('tasks.id'))
+    user = relationship('User', back_populates="rel")
+    tasks = relationship("Task", back_populates='rel')

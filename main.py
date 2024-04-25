@@ -44,7 +44,7 @@ async def main():
 
     storage = RedisStorage.from_url('redis://localhost:6379/0')
 
-    bot = Bot(token=await config.bot_token)
+    bot = Bot(token=await config.bot_token, parse_mode='HTML')
     dp = Dispatcher(logger=logger, storage=storage, bot=bot)
 
     scheduler = AsyncIOScheduler(timezone='Europe/Moscow')
