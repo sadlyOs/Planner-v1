@@ -1,4 +1,6 @@
+from aiogram import session
 from aiogram.types import User as User_info
+from sqlalchemy import select, and_
 from sqlalchemy.ext.asyncio import AsyncSession
 from .models import User, Task, RelUserTask
 
@@ -44,4 +46,12 @@ class Request:
         task.expectation = expectation
         await self.session.commit()
 
-    
+    async def get_excpectation(self, user: User_info):
+        all_tasks = await self.session.scalars(select(RelUserTask).where(RelUserTask.user_id == user.id))
+        excpectation = [await self.session.scalar(select(Task).where(and_(Task.expectation == 1, Task.id == i.task_id))) for i in all_tasks]
+        return excpectation
+
+    async def get_completed(self, user: User_info):
+        all_tasks = await self.session.scalars(select(RelUserTask).where(RelUserTask.user_id == user.id))
+        completed = [await self.session.scalar(select(Task).where(and_(Task.completed == 1, Task.id == i.task_id))) for i in all_tasks if i is not None]
+        return completed

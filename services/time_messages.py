@@ -9,6 +9,6 @@ async def send_message_time(user: User, bot: Bot, request: Request, ids: str, tr
     data = await request.get_task(ids)
     optTask = translator.get('optionTask').split(', ')
     await bot.send_message(chat_id=user.id, text=translator.get('endTask'))
-    await bot.send_message(chat_id=user.id, text=f"☑️<b>{optTask[0]}</b>: {data.title}\n\n🗒<b>{optTask[1]}</b>: {data.description}\n🕥<i>{optTask[2]}</i>:{data.due_datetime}",
+    await bot.send_message(chat_id=user.id, text=f"☑️{optTask[0]}: {data.title}\n\n🗒{optTask[1]}: {data.description}\n🕥{optTask[2]}:{data.due_datetime}",
                            reply_markup=await complete_ask(translator=translator, ids=ids))
     

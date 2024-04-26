@@ -10,6 +10,7 @@ complete = Router()
 async def complete_asking(call: CallbackQuery, translator: LocalizedTranslator, request: Request):
     if call.data.split('_')[1] == '0':
         await request.edit_completed(ids=call.data.split('_')[2])
+        await request.edit_excpectation(ids=call.data.split('_')[2])
         await call.message.edit_text(text=translator.get('completed'), reply_markup=await menu(translator=translator))
     else:
         await request.edit_excpectation(ids=call.data.split('_')[2], expectation=True)
