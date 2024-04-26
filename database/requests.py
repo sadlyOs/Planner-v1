@@ -1,9 +1,14 @@
+from aiogram import session
+from aiogram.types import User as User_info
+from sqlalchemy import select, and_
 from sqlalchemy.ext.asyncio import AsyncSession
-from .models import User
+from .models import User, Task, RelUserTask
 
 class Request:
     def __init__(self, session: AsyncSession) -> None:
         self.session = session
+
+    ''' User '''
 
     async def create_user(self, user_id: int) -> None:
         user = User(id=user_id)
@@ -18,3 +23,35 @@ class Request:
         if user.lang != lang:
             user.lang = lang
             await self.session.commit()
+
+
+    ''' Task '''
+    async def create_task(self, ids: str, user: User_info, title: str, description: str, due_datetime: str):
+        task = Task(id=str(ids), user_id=user.id, title=title, description=description, due_datetime=due_datetime)
+        rel = RelUserTask(user_id=user.id, task_id=str(ids))
+        self.session.add(task)
+        self.session.add(rel)
+        await self.session.commit()
+
+    async def get_task(self, ids: str):
+        return await self.session.get(Task, ids)
+
+    async def edit_completed(self, ids: str):
+        task = await self.session.get(Task, ids)
+        task.completed = True
+        await self.session.commit()
+
+    async def edit_excpectation(self, ids: str, expectation: bool = False):
+        task = await self.session.get(Task, ids)
+        task.expectation = expectation
+        await self.session.commit()
+
+    async def get_excpectation(self, user: User_info):
+        all_tasks = await self.session.scalars(select(RelUserTask).where(RelUserTask.user_id == user.id))
+        excpectation = [await self.session.scalar(select(Task).where(and_(Task.expectation == 1, Task.id == i.task_id))) for i in all_tasks]
+        return excpectation
+
+    async def get_completed(self, user: User_info):
+        all_tasks = await self.session.scalars(select(RelUserTask).where(RelUserTask.user_id == user.id))
+        completed = [await self.session.scalar(select(Task).where(and_(Task.completed == 1, Task.id == i.task_id))) for i in all_tasks if i is not None]
+        return completed

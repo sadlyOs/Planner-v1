@@ -1,11 +1,15 @@
 from aiogram.types import Message
 from aiogram import Router, F
-
+from aiogram.filters import CommandStart
+from keyboard.mainMenu import menu
 from language.translator import LocalizedTranslator
-# from database.requests import Request
 
 other = Router()
 
+
+@other.message(CommandStart())
+async def start(msg: Message, translator: LocalizedTranslator):
+    await msg.answer(text=translator.get('welcome'), reply_markup=await menu(translator))
 
 @other.message(F.photo)
 async def process_photo_command(message: Message):
