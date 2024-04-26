@@ -1,1 +1,1 @@
-Пример использование Fluentogram в пути language/translator.py специально для Пашки
+The planner bot is my second project. I'll write the READ.MD later
